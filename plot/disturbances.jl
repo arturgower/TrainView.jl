@@ -4,7 +4,7 @@ using Statistics, LinearAlgebra
 using Plots
 
 height = 250
-gr(size=(1.61 * height, height))
+gr(size=(1.61 * height, height), yflip = true)
 
 trackproperties = TrackProperties(track_gauge = 1.435)
 trackproperties2 = TrackProperties(track_gauge = 1.435 + 0.12)

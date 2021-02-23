@@ -183,9 +183,9 @@ function track_image_u(camera::VideoCamera{T}, Y::T, vs::AbstractVector{T}) wher
     return us
 end
 
-left_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T = track_image_u(camera, trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
+left_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T = track_image_u(camera, -trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
 
-right_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T = track_image_u(camera, - trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
+right_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T = track_image_u(camera, trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
 
 function camera_image(camera::VideoCamera{T}, spatial_points::Vector{V}) where {T, V<:AbstractVector{T}}
 
@@ -193,7 +193,7 @@ function camera_image(camera::VideoCamera{T}, spatial_points::Vector{V}) where {
 
     R = Rψ(ψ) * Rθ(θ) * Rφ(φ)
 
-    ξηζs = [ R * (xyx - camera.xyz) for xyx in spatial_points]
+    ξηζs = [ R * (xyz - camera.xyz) for xyz in spatial_points]
 
     f = camera.opticalproperties.focal_length * camera.opticalproperties.pixelspermeter
 

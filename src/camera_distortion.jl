@@ -56,7 +56,7 @@ function rail_uvs_to_distortion(left_track_uvs::AbstractVector{S}, right_track_u
         k = findfirst(choose_distortions .== s)
         if !isnothing(k)
             dict[s] = δ[k]
-        end    
+        end
     end
 
    return dict
@@ -80,9 +80,9 @@ function Δu(camera::VideoCamera{T}, Y::T, vs::AbstractArray{T}; choose_distorti
     return hcat(δus...)
 end
 
-left_track_Δu(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractArray{T}; kws...) where T = Δu(camera, - camera.xyz[2] + trackproperties.track_gauge / T(2), vs; kws...)
+left_track_Δu(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractArray{T}; kws...) where T = Δu(camera, - camera.xyz[2] - trackproperties.track_gauge / T(2), vs; kws...)
 
-right_track_Δu(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractArray{T}; kws...) where T = Δu(camera, - camera.xyz[2] - trackproperties.track_gauge / T(2), vs; kws...)
+right_track_Δu(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractArray{T}; kws...) where T = Δu(camera, - camera.xyz[2] + trackproperties.track_gauge / T(2), vs; kws...)
 
 
 function v_to_dudf(camera::VideoCamera{T}, Y::T; Z::T = - camera.xyz[3]) where T

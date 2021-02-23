@@ -12,14 +12,14 @@
     α = -3.2e-6
 
     left_track  = [
-        [x, trackprop.track_gauge/2.0 + β*x^2, α*x^2]
-    for x = LinRange(4.0,40.0,40)];
-
-    right_track = [
         [x, -trackprop.track_gauge/2.0 + β*x^2, α*x^2]
     for x = LinRange(4.0,40.0,40)];
 
-    cameraposition_reference = [0.0,0.1,2.4];
+    right_track = [
+        [x, trackprop.track_gauge/2.0 + β*x^2, α*x^2]
+    for x = LinRange(4.0,40.0,40)];
+
+    cameraposition_reference = [0.0,0.1,-2.4];
     ψθφ_ref = [1.0,-5.0,-1.0] .* (pi/180.0);
     camera_reference = VideoCamera(cameraposition_reference;
         ψθφ = ψθφ_ref,
@@ -31,11 +31,11 @@
 
     # test two different ways to calculate the us for a straight track
     left_track_ref  = [
-        [x, trackprop.track_gauge/2.0, 0.0]
+        [x, -trackprop.track_gauge/2.0, 0.0]
     for x = LinRange(4.0,40.0,40)]
 
     right_track_ref = [
-        [x, -trackprop.track_gauge/2.0, 0.0]
+        [x, trackprop.track_gauge/2.0, 0.0]
     for x = LinRange(4.0,40.0,40)]
 
     left_ref_uvs = camera_image(camera_reference, left_track_ref);
@@ -45,6 +45,9 @@
     vLs_ref = [uv[2] for uv in left_ref_uvs];
     uRs_ref = [uv[1] for uv in right_ref_uvs];
     vRs_ref = [uv[2] for uv in right_ref_uvs];
+
+    # plot(uLs_ref, vLs_ref, yflip = true)
+    # plot!(uRs_ref, vRs_ref, yflip = true)
 
     uLs0 = left_track_image_u(camera_reference, trackprop, vLs_ref);
     uRs0 = right_track_image_u(camera_reference, trackprop, vRs_ref);
@@ -65,30 +68,30 @@
     uLs0 = left_track_image_u(camera_reference, trackprop, vLs);
     uRs0 = right_track_image_u(camera_reference, trackprop, vRs);
 
-    duLdβ = v_to_dudβ(camera_reference, trackprop.track_gauge / (2));
-    duLdα = v_to_dudα(camera_reference, trackprop.track_gauge / (2));
+    duLdβ = v_to_dudβ(camera_reference, -trackprop.track_gauge / (2));
+    duLdα = v_to_dudα(camera_reference, -trackprop.track_gauge / (2));
     duLdβs = duLdβ.(vLs);
     duLdαs = duLdα.(vLs);
 
-    duRdβ = v_to_dudβ(camera_reference, -trackprop.track_gauge / (2));
-    duRdα = v_to_dudα(camera_reference, -trackprop.track_gauge / (2));
+    duRdβ = v_to_dudβ(camera_reference, trackprop.track_gauge / (2));
+    duRdα = v_to_dudα(camera_reference, trackprop.track_gauge / (2));
     duRdβs = duRdβ.(vRs);
     duRdαs = duRdα.(vRs);
 
     # The local minimum choice for β and α should be the values used for the ref track.
-    βs = LinRange(0, β, 20);
-    αs = LinRange(0, α, 20);
+    βs = LinRange(β * 0.8, β * 1.1, 40);
+    αs = LinRange(α * 0.8, α * 1.1, 20);
 
     uLs_arr = [duLdβs .* β + duLdαs .* α + uLs0 for β in βs];
     uRs_arr = [duRdβs .* β + duRdαs .* α + uRs0 for α in αs];
 
     m, i = findmin([norm(us - uLs) for us in uLs_arr])
     @test m / norm(uLs) < 1e-3
-    @test norm(βs[i] - β) / β < 1e-5
+    @test norm(βs[i] - β) / abs(β) < 1e-5
 
     m, i = findmin([norm(us - uRs) for us in uRs_arr])
     @test m / norm(uRs) < 1e-3
-    @test norm(αs[i] - α) / α < 1e-5
+    @test norm(αs[i] - α) / abs(α) < 1e-5
 end
 
 

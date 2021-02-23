@@ -5,7 +5,7 @@
 
     trackprop = TrackProperties(track_gauge = 1.435)
 
-    cameraposition_reference = [0.0,0.2,2.4];
+    cameraposition_reference = [0.0,0.2,-2.4];
 
     ψθφ_ref = [0.4,-5.0,-0.5] .* (pi/180.0);
     camera_reference = VideoCamera(cameraposition_reference;
@@ -15,11 +15,11 @@
     )
 
     left_track_ref  = [
-        [x, trackprop.track_gauge/2.0, 0.0]
+        [x, -trackprop.track_gauge/2.0, 0.0]
     for x = LinRange(4.0,40.0,40)];
 
     right_track_ref = [
-        [x, -trackprop.track_gauge/2.0,0.0]
+        [x, trackprop.track_gauge/2.0,0.0]
     for x = LinRange(4.0,40.0,40)];
 
     left_uvs_ref = camera_image(camera_reference, left_track_ref);
