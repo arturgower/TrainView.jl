@@ -10,7 +10,7 @@ trackproperties = TrackProperties(track_gauge = 1.435)
 trackproperties2 = TrackProperties(track_gauge = 1.435 + 0.12)
 
 ψθφ_ref = [1.0,15.0,5.0] .* pi / 180;
-cameraposition = [0.0,0.4,2.14];
+cameraposition = [0.0,0.4,1.14];
 
 camera = VideoCamera(cameraposition;
     focal_length = 5.8e-3,
