@@ -84,11 +84,11 @@
 
     m, i = findmin([norm(us - uLs) for us in uLs_arr])
     @test m / norm(uLs) < 1e-3
-    @test norm(βs[i] - β) / β < 1e-5
+    @test βs[i] ≈ β
 
     m, i = findmin([norm(us - uRs) for us in uRs_arr])
     @test m / norm(uRs) < 1e-3
-    @test norm(αs[i] - α) / α < 1e-5
+    @test αs[i] ≈ α
 end
 
 
