@@ -19,8 +19,8 @@
         [x, trackprop.track_gauge/2.0 + β*x^2, α*x^2]
     for x = LinRange(4.0,40.0,40)];
 
-    cameraposition_reference = [0.0,0.1,-2.4];
-    ψθφ_ref = [1.0,-5.0,-1.0] .* (pi/180.0);
+    cameraposition_reference = [0.0,-0.1,-2.4];
+    ψθφ_ref = [-1.0,-5.0,1.0] .* (pi/180.0);
     camera_reference = VideoCamera(cameraposition_reference;
         ψθφ = ψθφ_ref,
         focal_length = focal_length
@@ -79,18 +79,18 @@
     duRdαs = duRdα.(vRs);
 
     # The local minimum choice for β and α should be the values used for the ref track.
-    βs = LinRange(β * 0.8, β * 1.1, 40);
-    αs = LinRange(α * 0.8, α * 1.1, 20);
+    βs = LinRange(0.0, β, 20);
+    αs = LinRange(0.0, α, 20);
 
     uLs_arr = [duLdβs .* β + duLdαs .* α + uLs0 for β in βs];
     uRs_arr = [duRdβs .* β + duRdαs .* α + uRs0 for α in αs];
 
     m, i = findmin([norm(us - uLs) for us in uLs_arr])
-    @test m / norm(uLs) < 1e-3
+    @test m / norm(uLs) < 1e-4
     @test norm(βs[i] - β) / abs(β) < 1e-5
 
     m, i = findmin([norm(us - uRs) for us in uRs_arr])
-    @test m / norm(uRs) < 1e-3
+    @test m / norm(uRs) < 1e-4
     @test norm(αs[i] - α) / abs(α) < 1e-5
 end
 
@@ -114,11 +114,11 @@ end
     data = map(1:N) do i
 
         left_track  = [
-            [x, trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
+            [x, -trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
         for x = LinRange(4.0,40.0,40)];
 
         right_track = [
-            [x, -trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
+            [x, trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
         for x = LinRange(4.0,40.0,40)];
 
         camera = VideoCamera(cameraposition_reference + dXYZs[i];
