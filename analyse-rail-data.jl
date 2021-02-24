@@ -53,9 +53,9 @@ right_uvs = [[Ru[i],Rv[i]] for i in eachindex(Ru)];
 trackprop = TrackProperties(track_gauge = 1.435 + 0.065)
 
 cameraposition_reference = [0.0,0.604,-2.165];
-cameraposition_reference = [0.0,0.604,-2.165];
+cameraposition_reference = [0.0,0.604,-2.065];
 ψθφ_ref = [0.0,19.16,-7.28] .* (pi/180.0)
-ψθφ_ref = [1.5,-11.0,7.5] .* (pi/180.0)
+ψθφ_ref = [0.0,-11.0,7.5] .* (pi/180.0)
 
 # cameraposition_reference = [0.0,-0.604,2.065];
 # ψθφ_ref = [0.0,0.0,0.0] .* (pi/180.0)

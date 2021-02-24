@@ -9,15 +9,15 @@ gr(size=(1.61 * height, height), yflip = true)
 trackproperties = TrackProperties(track_gauge = 1.435)
 trackproperties2 = TrackProperties(track_gauge = 1.435 + 0.12)
 
-ψθφ_ref = [1.0,15.0,5.0] .* pi / 180;
-cameraposition = [0.0,0.4,1.14];
+ψθφ_ref = [1.0,-15.0,-5.0] .* pi / 180;
+cameraposition = [0.0,0.4,-1.14];
 
 camera = VideoCamera(cameraposition;
     focal_length = 5.8e-3,
     pixelspermeter = 1 / 5.5e-6,
     ψθφ = ψθφ_ref
 )
-vs = LinRange(-camera.opticalproperties.sensor_height / 3.5, 0.0, 40);
+vs = LinRange(0.0, camera.opticalproperties.sensor_height / 3.5, 40);
 
 choose_distortions = [:Y,:Z,:ψ,:θ,:φ,:α,:β];
 
@@ -36,9 +36,9 @@ uR2 = right_track_image_u(camera, trackproperties2, vs);
 # Calculate how a grid on the track floor looks like in the camera image
     hlines = [
         [[x, y, 0.0] for y in LinRange(-1.5,1.5,10)]
-    for x = 1.0:0.5:8.0];
+    for x = 0.5:0.5:5.0];
     vlines = [
-        [[x, y, 0.0] for x in LinRange(1.0,10.0,20)]
+        [[x, y, 0.0] for x in 0.5:0.5:5.0]
     for y in -1.5:0.5:1.5];
 
     cam_hlines = map(hlines) do h
