@@ -21,7 +21,7 @@ Rv2 = df." Right_Rail_Top_Y";
 max_v = 720
 vs = [Lv1, Lv2, Rv1, Rv2];
 for v in vs
-    v[1:end] = (max_v / 2.0) .- v
+    v[1:end] = v .- (max_v / 2.0)
 end
 
 # max_u = max(maximum(Lu2),maximum(Ru2))
@@ -52,10 +52,10 @@ right_uvs = [[Ru[i],Rv[i]] for i in eachindex(Ru)];
 
 trackprop = TrackProperties(track_gauge = 1.435 + 0.065)
 
-cameraposition_reference = [0.0,0.604,2.165];
-cameraposition_reference = [0.0,0.604,2.165];
+cameraposition_reference = [0.0,0.604,-2.165];
+cameraposition_reference = [0.0,0.604,-2.065];
 ψθφ_ref = [0.0,19.16,-7.28] .* (pi/180.0)
-ψθφ_ref = [1.5,11.0,-4.5] .* (pi/180.0)
+ψθφ_ref = [0.0,-11.0,7.5] .* (pi/180.0)
 
 # cameraposition_reference = [0.0,-0.604,2.065];
 # ψθφ_ref = [0.0,0.0,0.0] .* (pi/180.0)
@@ -102,7 +102,8 @@ function calibration_objective(v::Vector)
         (v[j] > maxs[j]) * (exp(scale*(v[j]-maxs[j])^2) - 1.0) + (v[j] < mins[j]) * (exp(scale*(v[j] - mins[j])^2) - 1.0)
     end
 
-    return sum(constraints) + sum(abs2.(uLs - Lu)) / sum(abs2.(Lu) + abs2.(Lv)) + sum(abs2.(uRs - Ru)) / sum(abs2.(Ru) + abs2.(Rv))
+    # return sum(constraints) + sum(abs2.(uLs - Lu)) / sum(abs2.(Lu) + abs2.(Lv)) + sum(abs2.(uRs - Ru)) / sum(abs2.(Ru) + abs2.(Rv))
+    return sum(abs2.(uLs - Lu)) / sum(abs2.(Lu) + abs2.(Lv)) + sum(abs2.(uRs - Ru)) / sum(abs2.(Ru) + abs2.(Rv))
 end
 
 v = [cameraposition_reference[2:3]; ψθφ_ref[1:3] .* (180.0 / pi)];
@@ -114,7 +115,7 @@ v = res.minimizer
 calibration_objective(v)
 
 cameraposition_reference = [0.0,v[1],v[2]]
-ψθφ_ref = [0.0,v[3],v[4]] .* (pi/180.0)
+ψθφ_ref = [v[3],v[4],v[5]] .* (pi/180.0)
 
 camera_reference = VideoCamera(cameraposition_reference;
     focal_length = 5.8e-3,

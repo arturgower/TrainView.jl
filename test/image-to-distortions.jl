@@ -5,9 +5,9 @@
 
     trackprop = TrackProperties(track_gauge = 1.435)
 
-    cameraposition_reference = [0.0,0.2,2.4];
+    cameraposition_reference = [0.0,-0.2,-2.4];
 
-    ψθφ_ref = [0.4,-5.0,-0.5] .* (pi/180.0);
+    ψθφ_ref = [0.4,-5.0,0.5] .* (pi/180.0);
     camera_reference = VideoCamera(cameraposition_reference;
         focal_length = focal_length,
         pixelspermeter = pixelspermeter,
@@ -15,11 +15,11 @@
     )
 
     left_track_ref  = [
-        [x, trackprop.track_gauge/2.0, 0.0]
+        [x, -trackprop.track_gauge/2.0, 0.0]
     for x = LinRange(4.0,40.0,40)];
 
     right_track_ref = [
-        [x, -trackprop.track_gauge/2.0,0.0]
+        [x, trackprop.track_gauge/2.0,0.0]
     for x = LinRange(4.0,40.0,40)];
 
     left_uvs_ref = camera_image(camera_reference, left_track_ref);
@@ -104,11 +104,11 @@
 
     estimate_δs = map(1:N) do i
         left_track  = [
-            [x, trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
+            [x, -trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
         for x = LinRange(4.0,40.0,40)];
 
         right_track = [
-            [x, -trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
+            [x, trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
         for x = LinRange(4.0,40.0,40)];
 
         camera = VideoCamera(camera_reference.xyz + dXYZs[i], camera_reference.ψθφ + dψθφs[i], camera_reference.opticalproperties)
@@ -141,11 +141,11 @@
 
     estimate_δs = map(1:N) do i
         left_track  = [
-            [x, trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
+            [x, -trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
         for x = LinRange(4.0,40.0,40)];
 
         right_track = [
-            [x, -trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
+            [x, trackprop.track_gauge/2.0 + βs[i] * x^2, αs[i] *x^2]
         for x = LinRange(4.0,40.0,40)];
 
         camera = VideoCamera(camera_reference.xyz + dXYZs[i], camera_reference.ψθφ + dψθφs[i], camera_reference.opticalproperties)
