@@ -53,9 +53,9 @@ right_uvs = [[Ru[i],Rv[i]] for i in eachindex(Ru)];
 trackprop = TrackProperties(track_gauge = 1.435 + 0.065)
 
 cameraposition_reference = [0.0,0.604,-2.165];
-cameraposition_reference = [0.0,0.604,-2.065];
+cameraposition_reference = [0.0,0.6,-2.165];
 ψθφ_ref = [0.0,19.16,-7.28] .* (pi/180.0)
-ψθφ_ref = [0.0,-11.0,7.5] .* (pi/180.0)
+ψθφ_ref = [0.0,-19.1,-7.28] .* (pi/180.0)
 
 # cameraposition_reference = [0.0,-0.604,2.065];
 # ψθφ_ref = [0.0,0.0,0.0] .* (pi/180.0)
@@ -72,12 +72,12 @@ uLs = left_track_image_u(camera_reference, trackprop, Lv);
 uRs = right_track_image_u(camera_reference, trackprop, Rv);
 
 using Plots
+gr(yflip = true)
 plot(Lu,Lv, lab = "")
 plot!(Ru,Rv, lab = "")
 
 plot!(uLs,Lv,linestyle=:dash, lab = "")
 plot!(uRs,Rv,linestyle=:dash, lab = "")
-
 
 using Optim
 
@@ -110,17 +110,17 @@ v = [cameraposition_reference[2:3]; ψθφ_ref[1:3] .* (180.0 / pi)];
 calibration_objective(v)
 
 tol = 1e-5
-res = optimize(calibration_objective, v, Optim.Options(x_tol=tol))
-v = res.minimizer
+res = optimize(calibration_objective, v, Optim.Options(x_tol=tol));
+res.minimum
 calibration_objective(v)
 
-cameraposition_reference = [0.0,v[1],v[2]]
-ψθφ_ref = [v[3],v[4],v[5]] .* (pi/180.0)
+camerapos = [0.0,v[1],v[2]]
+ψθφ = [v[3],v[4],v[5]] .* (pi/180.0)
 
-camera_reference = VideoCamera(cameraposition_reference;
+camera_reference = VideoCamera(camerapos;
     focal_length = 5.8e-3,
     pixelspermeter = 1 / 5.5e-6,
-    ψθφ = ψθφ_ref
+    ψθφ = ψθφ
 )
 
 uLs = left_track_image_u(camera_reference, trackprop, Lv);
@@ -132,43 +132,25 @@ plot!(Ru,Rv, lab = "")
 plot!(uLs,Lv,linestyle=:dash, lab = "")
 plot!(uRs,Rv,linestyle=:dash, lab = "")
 
-
-v = [0.604,2.065,11.16,-4.4];
-lower = [0.1, 1.9,0.0,-15.0]
-upper = [1.0, 2.8,20.0,15.0]
-inner_optimizer = GradientDescent()
-res = optimize(calibration_objective, lower, upper, v, Fminbox(inner_optimizer))
-
-v = res.minimizer
-
-cameraposition_reference = [0.0,v[1],v[2]];
-ψθφ_ref = [0.0,v[3],v[4]] .* (pi/180.0);
-# ψθφ_ref = [ mod(a,2pi) for a in ψθφ_ref]
-
 camera_reference = VideoCamera(cameraposition_reference;
     focal_length = 5.8e-3,
     pixelspermeter = 1 / 5.5e-6,
     ψθφ = ψθφ_ref
 )
-
-uLs = left_track_image_u(camera_reference, trackprop, Lv);
-uRs = right_track_image_u(camera_reference, trackprop, Rv);
-
-plot(Lu,Lv, lab = "")
-plot!(Ru,Rv, lab = "")
-
-plot!(uLs,Lv,linestyle=:dash, lab = "")
-plot!(uRs,Rv,linestyle=:dash, lab = "")
 
 distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
-    choose_distortions = [:Y,:Z,:θ,:φ],
-    # choose_distortions = [:Y,:Z,:θ,:φ,:α,:β],
-    iterations = 1)
+    # choose_distortions = [:Y,:f],
+    choose_distortions = [:Y,:Z,:f,:θ,:φ],
+    # choose_distortions = [:Y,:Z,:θ,:φ,:ψ,:α,:β],
+    iterations = 3)
 
 camera = VideoCamera(camera_reference,distortion)
 
 uLs2 = left_track_image_u(camera, trackprop, Lv);
 uRs2 = right_track_image_u(camera, trackprop, Rv);
+
+plot(Lu,Lv, lab = "")
+plot!(Ru,Rv, lab = "")
 
 plot!(uLs2,Lv,linestyle=:dash, lab = "")
 plot!(uRs2,Rv,linestyle=:dash, lab = "")

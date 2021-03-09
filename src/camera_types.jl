@@ -110,13 +110,21 @@ end
 
 Returns a `VideoCamera` with the same properties as camera, except with the added distortion.
 """
-function VideoCamera(camera::VideoCamera{T}, distortion::Dict) where T
-    δxyz = [get(distortion, s, zero(T)) for s in [:X,:Y,:Z]]
-    δψθφ = [get(distortion, s, zero(T)) for s in [:ψ,:θ,:φ]]
+function VideoCamera(camera::VideoCamera{T}, distortions::Dict) where T
+    δxyz = [get(distortions, s, zero(T)) for s in [:X,:Y,:Z]]
+    δψθφ = [get(distortions, s, zero(T)) for s in [:ψ,:θ,:φ]]
+    δf = get(distortions, :f, zero(T))
 
-    return VideoCamera(camera.xyz - δxyz, camera.ψθφ + δψθφ, camera.opticalproperties)
+    dict = Dict(n => getfield(camera.opticalproperties,n) for n in fieldnames(OpticalProperties))
+    f = dict[:focal_length] + δf
+    delete!(dict,:focal_length)
+
+    opt = OpticalProperties(f; dict...)
+
+    return VideoCamera(camera.xyz - δxyz, camera.ψθφ + δψθφ, opt)
 end
 
+focal_length(camera::VideoCamera{T}) where T = camera.opticalproperties.focal_length
 
 """
     focalθφ(focalpoint::Vector, cameraposition::Vector)

@@ -6,8 +6,11 @@
 
 function camera_distoration(camera_reference::VideoCamera, camera::VideoCamera)
 
-    keys = [:X,:Y,:Z,:ψ,:θ,:φ]
-    δ = [- (camera.xyz - camera_reference.xyz); camera.ψθφ - camera_reference.ψθφ]
+    keys = [:X,:Y,:Z,:ψ,:θ,:φ,:f]
+    δ = [- (camera.xyz - camera_reference.xyz);
+        camera.ψθφ - camera_reference.ψθφ;
+        focal_length(camera) - focal_length(camera_reference)
+    ]
 
     return Dict(keys .=> δ)
 end
