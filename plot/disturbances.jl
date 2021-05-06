@@ -17,7 +17,7 @@ camera = VideoCamera(cameraposition;
     pixelspermeter = 1 / 5.5e-6,
     ψθφ = ψθφ_ref
 )
-vs = LinRange(0.0, camera.opticalproperties.sensor_height / 3.5, 40);
+vs = LinRange(0.0, camera.opticalproperties.sensor_height / 3.5, 40)[2:end];
 
 choose_distortions = [:Y,:Z,:ψ,:θ,:φ,:α,:β];
 
@@ -34,43 +34,25 @@ uR2 = right_track_image_u(camera, trackproperties2, vs);
 ΔuR2 = right_track_Δu(camera, trackproperties2, vs; choose_distortions = choose_distortions);
 
 # Calculate how a grid on the track floor looks like in the camera image
-    hlines = [
-        [[x, y, 0.0] for y in LinRange(-1.5,1.5,10)]
-    for x = 0.5:0.5:5.0];
-    vlines = [
-        [[x, y, 0.0] for x in 0.5:0.5:5.0]
-    for y in -1.5:0.5:1.5];
+    v2X = v_to_X(camera, trackproperties.track_gauge / 2.0);
 
-    cam_hlines = map(hlines) do h
-        uvs = camera_image(camera, h)
-        us = [uv[1] for uv in uvs]
-        vs = [uv[2] for uv in uvs]
-        [us, vs]
-    end;
-    cam_vlines = map(vlines) do v
-        uvs = camera_image(camera, v)
-        us = [uv[1] for uv in uvs]
-        vs = [uv[2] for uv in uvs]
-        [us, vs]
-    end;
-    function plotgrid()
-        plot()
-        [plot!(cam..., color = :black, lab = "", linealpha = 0.3, linewidth = 0.1) for cam in cam_hlines]
-        [plot!(cam..., color = :black, lab = "", linealpha = 0.3) for cam in cam_vlines]
-    end
+    Ymax = 0.8 * trackproperties.track_gauge;
+    Xmin =  minimum(v2X.(vs));
+    Xmax =  maximum(v2X.(vs));
 
 map(choose_distortions) do d
     i = findfirst(choose_distortions .== d);
     δs = zeros(length(choose_distortions));
     δs[i] = 0.1;
 
-    plotgrid()
+    plot(camera; Xmin = Xmin, Xmax = Xmax, Ymax = Ymax)
 
     plot!(Shape([uL;reverse(uL2)], [vs;reverse(vs)]),
         color = :red, lab = "",
         grid = false,
         legend = :bottom,
         title = "$(choose_distortions[i]) disturbance",
+        # title = "reference image",
         xlab = "u", ylab = "v"
         )
     plot!(Shape([uR;reverse(uR2)], [vs;reverse(vs)]),color = :red, lab = "", legend = :bottom)
@@ -84,4 +66,5 @@ map(choose_distortions) do d
         lab = ""
     )
     savefig("../../images/$(choose_distortions[i])-disturbance.pdf")
+    # savefig("../../images/reference-tracks.pdf")
 end

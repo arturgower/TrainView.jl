@@ -1,6 +1,6 @@
 
 # Some track and camera properties
-    focal_length = 40e-3
+    f = 40e-3
     # pixelspermeter = 181818.0
 
     trackprop = TrackProperties(track_gauge = 1.435)
@@ -23,7 +23,7 @@
     ψθφ_ref = [-1.0,-5.0,1.0] .* (pi/180.0);
     camera_reference = VideoCamera(cameraposition_reference;
         ψθφ = ψθφ_ref,
-        focal_length = focal_length
+        focal_length = f
         # , pixelspermeter = pixelspermeter
     )
 
@@ -122,7 +122,7 @@ end
         for x = LinRange(4.0,40.0,40)];
 
         camera = VideoCamera(cameraposition_reference + dXYZs[i];
-            focal_length = focal_length
+            focal_length = f
             , ψθφ = ψθφ_ref + dψθφs[i]
         );
 

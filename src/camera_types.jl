@@ -66,14 +66,14 @@ struct OpticalProperties{T<:AbstractFloat}
     "The focal length in meters"
     focal_length::T
     "Sensor width in pixels"
-    sensor_width::T
+    sensor_width::Int
     "Sensor height in pixels"
-    sensor_height::T
+    sensor_height::Int
     "Meters in one pixel length"
     pixelspermeter::T
 end
 
-function OpticalProperties(focal_length::T; sensor_width::T = 6500.0, sensor_height::T = 5200.0, pixelspermeter::T = 1 / 5.5e-6) where T
+function OpticalProperties(focal_length::T; sensor_width::Int = 6500, sensor_height::Int = 5200, pixelspermeter::T = 1 / 5.5e-6) where T
     return OpticalProperties{T}(focal_length,sensor_width,sensor_height,pixelspermeter)
 end
 
