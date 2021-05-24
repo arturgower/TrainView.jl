@@ -27,11 +27,11 @@ function rail_uvs_to_distortion(left_track_uvs::AbstractVector{S}, right_track_u
 
     camera = camera_reference
 
-    line_distortions = [:Y,:Z,:ψ,:θ,:φ,:f]
-    if length(intersect(line_distortions, choose_distortions)) <= 4
-        w = zero(T)
+    line_distortions = [:Y,:Z,:ψ,:θ,:φ,:ψT,:θT,:φT,:f]
+    w = if length(intersect(line_distortions, choose_distortions)) <= 4
+        zero(T)
     else
-        w = eps(T)^T(2/3)
+        eps(T)^T(2/3)
     end
 
     L = length(choose_distortions)
@@ -45,17 +45,24 @@ function rail_uvs_to_distortion(left_track_uvs::AbstractVector{S}, right_track_u
 
         uLs0 = left_track_image_u(camera, trackproperties, vLs);
         uRs0 = right_track_image_u(camera, trackproperties, vRs);
-        duLs = uLs0 - uLs;
-        duRs = uRs0 - uRs;
+        duLs = uLs - uLs0;
+        duRs = uRs - uRs0;
 
-        A = - transpose(ΔuL) * duLs - transpose(ΔuR) * duRs;
+        A = transpose(ΔuL) * duLs + transpose(ΔuR) * duRs;
         δ = inv(M) * A
+        #
+        #
+        # inv(transpose(ΔuL) * ΔuL) * transpose(ΔuL) * duLs
+        #
+        # inv(transpose(ΔuL) * ΔuL) * transpose(ΔuL) * (ΔuL * δs[i])
+        #
+        # inv(transpose(ΔuL) * ΔuL + transpose(ΔuR) * ΔuR)
 
         camera = VideoCamera(camera, Dict(choose_distortions .=> δ))
     end
 
     dict = camera_distoration(camera_reference, camera)
-    for s in [:α,:β]
+    for s in [:α,:β,:ψT,:θT,:φT]
         k = findfirst(choose_distortions .== s)
         if !isnothing(k)
             dict[s] = δ[k]
@@ -212,3 +219,29 @@ function v_to_dudα(camera::VideoCamera{T}, Y::T; Z::T = - camera.xyz[3]) where 
 
     return δu
 end
+
+function v_to_dudψT(camera::VideoCamera{T}, Y::T; kws...) where T
+    ψ, θ, φ = camera.ψθφ
+
+    dudψ = v_to_dudψ(camera, Y; kws...)
+    dudθ = v_to_dudθ(camera, Y; kws...)
+    dudφ = v_to_dudφ(camera, Y; kws...)
+
+    δu(v::T) = dudψ(v) * cos(φ) / cos(θ) - dudθ(v) * sin(φ) + dudφ(v) * cos(φ) * tan(θ)
+
+    return δu
+end
+
+function v_to_dudθT(camera::VideoCamera{T}, Y::T; kws...) where T
+    ψ, θ, φ = camera.ψθφ
+
+    dudψ = v_to_dudψ(camera, Y; kws...)
+    dudθ = v_to_dudθ(camera, Y; kws...)
+    dudφ = v_to_dudφ(camera, Y; kws...)
+
+    δu(v::T) = dudψ(v) * sec(θ) * sin(φ) + dudθ(v) * cos(φ) + dudφ(v) * sin(φ) * tan(θ)
+
+    return δu
+end
+
+v_to_dudφT(camera::VideoCamera{T}, Y::T; kws...) where T = v_to_dudφ(camera, Y; kws...)

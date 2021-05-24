@@ -78,6 +78,28 @@ function OpticalProperties(focal_length::T; sensor_width::Int = 6500, sensor_hei
 end
 
 """
+    TrainCar
+
+Represents everything about the train car.
+
+For the possible fields we have
+
+    - `xyz` is the centre of mass of the train car in the form ``[x,y,z]`` .
+    - `ψθφ` is the orientation of the train car relative to the tracks and is in the form [ψ,θ,φ], where ψ is the roll, θ the pitch, and φ the yaw of the camera.
+
+"""
+struct TrainCar{T<:AbstractFloat}
+    xyz::SVector{3,T}
+    ψθφ::SVector{3,T}
+end
+
+TrainCar(xyz::AbstractVector{T}, ψθφ::AbstractVector{T} = zeros(T,3)) where T = TrainCar{T}(SVector{3,T}(xyz), SVector{3,T}(ψθφ))
+
+TrainCar(ψθφ::AbstractVector{T} = zeros(T,3);
+    xyz::AbstractVector{T} = zeros(T,3)
+) where T = TrainCar(xyz, ψθφ)
+
+"""
     VideoCamera
 
 Represents everything about the camera position and the camera's [`OpticalProperties`](@ref).
@@ -115,7 +137,10 @@ function VideoCamera(camera::VideoCamera{T}, distortions::Dict) where T
     δψθφ = [get(distortions, s, zero(T)) for s in [:ψ,:θ,:φ]]
     δf = get(distortions, :f, zero(T))
 
-    dict = Dict(n => getfield(camera.opticalproperties,n) for n in fieldnames(OpticalProperties))
+    dict = Dict(
+        n => getfield(camera.opticalproperties,n)
+    for n in fieldnames(OpticalProperties))
+
     f = dict[:focal_length] + δf
     delete!(dict,:focal_length)
 
@@ -191,15 +216,26 @@ function track_image_u(camera::VideoCamera{T}, Y::T, vs::AbstractVector{T}) wher
     return us
 end
 
-left_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T = track_image_u(camera, -trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
+function left_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T
+    # traincar::TrainCar{T} = TrainCar()) where T
 
-right_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T = track_image_u(camera, trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
+    return track_image_u(camera, -trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
+end
 
-function camera_image(camera::VideoCamera{T}, spatial_points::Vector{V}) where {T, V<:AbstractVector{T}}
+function right_track_image_u(camera::VideoCamera{T}, trackproperties::TrackProperties{T}, vs::AbstractVector{T}) where T
+
+    return track_image_u(camera, trackproperties.track_gauge / T(2) - camera.xyz[2], vs)
+end
+
+function camera_image(camera::VideoCamera{T}, spatial_points::Vector{V}, traincar::TrainCar{T} = TrainCar(zeros(T,3))) where {T, V<:AbstractVector{T}}
 
     ψ, θ, φ = camera.ψθφ
+    RC = Rψ(ψ) * Rθ(θ) * Rφ(φ)
 
-    R = Rψ(ψ) * Rθ(θ) * Rφ(φ)
+    ψT, θT, φT = traincar.ψθφ
+    RT = Rψ(ψT) * Rθ(θT) * Rφ(φT)
+
+    R = RC * RT
 
     ξηζs = [ R * (xyz - camera.xyz) for xyz in spatial_points]
 
