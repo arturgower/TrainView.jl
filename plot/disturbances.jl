@@ -20,6 +20,7 @@ camera = VideoCamera(cameraposition;
 vs = LinRange(0.0, camera.opticalproperties.sensor_height / 3.5, 40)[2:end];
 
 choose_distortions = [:Y,:Z,:ψ,:θ,:φ,:α,:β];
+choose_distortions = [:Y,:Z,:ψT];
 
 uL = left_track_image_u(camera, trackproperties, vs);
 uR = right_track_image_u(camera, trackproperties, vs);
@@ -66,5 +67,6 @@ map(choose_distortions) do d
         lab = ""
     )
     savefig("../../images/$(choose_distortions[i])-disturbance.pdf")
+    # savefig("../../images/$(choose_distortions[i])-disturbance-flat.pdf")
     # savefig("../../images/reference-tracks.pdf")
 end

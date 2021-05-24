@@ -89,15 +89,13 @@ For the possible fields we have
 
 """
 struct TrainCar{T<:AbstractFloat}
-    xyz::SVector{3,T}
     ψθφ::SVector{3,T}
+    xyz::SVector{3,T}
 end
 
-TrainCar(xyz::AbstractVector{T}, ψθφ::AbstractVector{T} = zeros(T,3)) where T = TrainCar{T}(SVector{3,T}(xyz), SVector{3,T}(ψθφ))
+TrainCar(ψθφ::AbstractVector{T} = zeros(T,3), xyz::AbstractVector{T} = zeros(T,3)) where T = TrainCar{T}( SVector{3,T}(ψθφ),SVector{3,T}(xyz))
 
-TrainCar(ψθφ::AbstractVector{T} = zeros(T,3);
-    xyz::AbstractVector{T} = zeros(T,3)
-) where T = TrainCar(xyz, ψθφ)
+TrainCar(ψθφ::AbstractVector{T} = zeros(T,3); xyz::AbstractVector{T} = zeros(T,3)) where T = TrainCar(ψθφ,xyz)
 
 """
     VideoCamera
