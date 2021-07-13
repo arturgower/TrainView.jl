@@ -32,9 +32,11 @@ using Plots
 gr(yflip = true)
 GR.inline("png")
 
+# args = ["../../data/output_results_centre_line.csv", "output.csv"]
+
 file = "../../data/output_results_centre_line.csv";
 # df = CSV.read(file, DataFrame);
-df = CSV.File(file);
+df = CSV.File(file;
 
 lines = open(file) do f
     [l for l in eachline(f)]
