@@ -20,6 +20,7 @@ jobs:
           - 'nightly'
         os:
           - ubuntu-latest
+          - osx
         arch:
           - x64
     steps:
