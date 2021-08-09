@@ -1,4 +1,4 @@
-using TrainView 
+using TrainView
 
 using CSV, DataFrames
 # using Statistics, LinearAlgebra
@@ -72,7 +72,7 @@ function track_to_cabin_movement(input_file,output_file)
 
     distortion_matrix = transpose(hcat(distortions...))
 
-    df = DataFrame(distortion_matrix)
+    df = DataFrame(distortion_matrix,choose_distortions)
     rename!(df,choose_distortions)
 
     CSV.write(output_file,df)
