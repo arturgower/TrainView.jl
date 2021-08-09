@@ -1,5 +1,15 @@
 # TrainView.jl
 
+A Julia package to model and interpret how a camera on a train sees the tracks ahead. The camera is assumed to be fixed on the train, but the train can move relative to the tracks in any direction.
+
+Currently the package can **model** how the tracks should appear in a camera image, as shown below.
+![A short video of the view of some tracks from a moving train](plots/simulate-trainview.gif)
+
+And given the positions of the track, **predict** how the train car has moved, as shown below.
+![A short video of how data from tracks can be used to predict train car movement](plots/track-distortions-track-center-line.gif)
+
+## An example
+
 To process many frames, each with a large number of points on each track, such as `data/output_results_centre_line.csv`, go to the terminal, navigate to the same folder as this code, and execute
 ```
 > julia --project track_to_cabin_movement.jl data/output_results_centre_line.csv data/output.csv
