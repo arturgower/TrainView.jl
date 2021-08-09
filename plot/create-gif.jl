@@ -1,4 +1,4 @@
-include("TrainView.jl")
+using TrainView
 
 maxframes = 400
 

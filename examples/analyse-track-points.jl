@@ -13,7 +13,7 @@
     #
     # It looks to me that the carriage with the cab (seems to be called DMOS) is 20.75(L) x 2.8 (W) x 3.78(H) and weighs 40.7 t.
 
-include("../src/TrainView.jl")
+using TrainView
 
 trackprop = TrackProperties(track_gauge = 1.435 + 0.065)
 

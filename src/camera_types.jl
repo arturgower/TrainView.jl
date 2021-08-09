@@ -93,7 +93,7 @@ struct TrainCar{T<:AbstractFloat}
     xyz::SVector{3,T}
 end
 
-TrainCar(ψθφ::AbstractVector{T} = zeros(T,3), xyz::AbstractVector{T} = zeros(T,3)) where T = TrainCar{T}( SVector{3,T}(ψθφ),SVector{3,T}(xyz))
+TrainCar(ψθφ::AbstractVector{T}, xyz::AbstractVector{T}) where T = TrainCar{T}( SVector{3,T}(ψθφ),SVector{3,T}(xyz))
 
 TrainCar(ψθφ::AbstractVector{T} = zeros(T,3); xyz::AbstractVector{T} = zeros(T,3)) where T = TrainCar(ψθφ,xyz)
 
@@ -115,6 +115,7 @@ struct VideoCamera{T<:AbstractFloat}
 end
 
 VideoCamera(xyz::AbstractVector{T}, ψθφ::AbstractVector{T}, opticalproperties::OpticalProperties{T}) where T = VideoCamera{T}(SVector{3,T}(xyz), SVector{3,T}(ψθφ), opticalproperties)
+
 
 function VideoCamera(cameraposition::AbstractVector{T};
     focalpoint::AbstractVector{T} = [T(30),T(0),T(0)],

@@ -1,4 +1,4 @@
-include("../src/TrainView.jl")
+using TrainView
 using FFTW
 
 maxframes = 400

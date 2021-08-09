@@ -1,4 +1,4 @@
-include("src/TrainView.jl")
+using TrainView 
 
 using CSV, DataFrames
 using Statistics, LinearAlgebra

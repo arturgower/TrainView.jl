@@ -1,6 +1,5 @@
-include("../src/TrainView.jl")
-
-using Test
+using Test, TrainView
+using LinearAlgebra, Statistics
 
 include("track-to-image.jl")
 

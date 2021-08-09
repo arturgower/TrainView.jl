@@ -2,12 +2,15 @@
 
 To process many frames, each with a large number of points on each track, such as `data/output_results_centre_line.csv`, go to the terminal, navigate to the same folder as this code, and execute
 ```
-> julia track_to_cabin_movement.jl data/output_results_centre_line.csv data/output.csv
+> julia --project track_to_cabin_movement.jl data/output_results_centre_line.csv data/output.csv
 ```
-Or from within the julia REPL
+Or open the julia REPL
+```
+> julia --project
+```
+ and then run the code
 ```julia
 julia> include("track_to_cabin_movement.jl")
-
 julia> track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv")
 ```
 where `output_results_centre_line.csv` is a data file with the track points on images, i.e. see the format of `data/output_results_centre_line.csv`, and `output.csv` is an output file name with the format:
