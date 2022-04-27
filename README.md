@@ -53,5 +53,5 @@ but if now run the same function again, without closing julia, then, even if we 
 julia> @time track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv")
 
 Data saved as a CSV file in data/output.csv
-  3.366514 seconds (63.07 M allocations: 3.257 GiB, 13.45% gc time)
+  3.36651 seconds (63.07 M allocations: 3.257 GiB, 13.45% gc time)
 ```
