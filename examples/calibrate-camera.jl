@@ -3,7 +3,7 @@ using TrainView
 using CSV, DataFrames
 using Statistics, LinearAlgebra
 
-file = "../data/rail_detection_results_20210127.csv";
+file = "data/rail_detection_results_20210127.csv";
 df = CSV.read(file, DataFrame);
 
 Lu1 = df." Left_Rail_Bottom_X";

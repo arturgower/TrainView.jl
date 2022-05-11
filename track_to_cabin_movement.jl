@@ -3,52 +3,30 @@ using TrainView
 using CSV, DataFrames
 # using Statistics, LinearAlgebra
 
-function track_to_cabin_movement(input_file,output_file)
+# input_uv_file = "data/output_results_centre_line.csv"
 
-    !isfile(input_file) && @error "there is no file: $input_file "
-
-    println("Loading data file from:", input_file)
-    println("I hope it's in the right format!")
-
-    lines = open(input_file) do f
-        [l for l in eachline(f)]
-    end;
-
-    header = lines[1];
-    lines = lines[2:end];
-
-    max_v = 720
-    max_u = 1280
-
-    trackprop = TrackProperties(track_gauge = 1.435 + 0.065)
-
-    # from a previous calibration exercise
-    camera_xyz = [0.0, 0.6771, -2.1754]
-    camera_ψθφ = [0.0, -0.2038, -0.08219]
-
-    camera = VideoCamera(camera_xyz;
-        ψθφ = camera_ψθφ,
-        focal_length = 5.8e-3,
-        pixelspermeter = 1 / 5.5e-6
+function track_to_cabin_movement(input_uv_file,output_file;
+        cameraposition = [0.0, 0.6771, -2.1754],
+        cameraψθφ = [0.0, -0.2038, -0.08219],
+        trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
+        camera = VideoCamera(cameraposition;
+            focal_length = 5.8e-3,
+            pixelspermeter = 1 / 5.5e-6,
+            ψθφ = cameraψθφ
+        ),
+        max_v::Int = 720, max_u::Int = 1280
     )
 
-    uv_data = map(lines) do l
-        data = parse.(Int,split(l,',')[2:end-1])
+    uv_data = load_uv_data(input_uv_file; max_v = 720, max_u = 1280)
 
-        Llen = data[1]
-        Rlen = data[2]
+    if camera.xyz == [0.0,0.604,-2.165]
+        println("You have not specified a camera setup, which you can do be passing the option 'camera = VideoCamera(position; ...)'. In this case the code will attempt to work out the camera setup from the data. Note the current values used for 'focal_length=$(camera.opticalproperties.focal_length)' and 'pixelspermeter=$(camera.opticalproperties.pixelspermeter)' which can not be inferred from the data.")
 
-        us = data[3:2:end] .- (max_u / 2.0);
-        vs = data[4:2:end] .- (max_v / 2.0);
-
-        Lu = us[1:Llen];
-        Lv = vs[1:Llen];
-
-        Ru = us[Llen+1:Rlen+Llen];
-        Rv = vs[Llen+1:Rlen+Llen];
-
-        return [Lu,Lv,Ru,Rv]
-    end;
+        camera = camera_calibration(uv_data;
+            trackprop = trackprop,
+            camera_initial_guess = camera
+        )
+    end
 
     # Calculate train car movement from frames
         choose_distortions = [:Y,:Z,:θT,:φT,:α,:β];
