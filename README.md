@@ -38,6 +38,22 @@ where each row corresponds to one frame. To explain the columns we first need a 
 
 The columns show how much the train car is displaced from being aligned with the tracks. That is, if the values in one row are all zero, then the train is complete aligned with the tracks, and the suspension is in its position of rest. Y and Z are the displacements of the train car in the Y and Z direction, θT and φT are the pitch and yaw of the train car, while α and	β are the vertical and horizontal curvature.
 
+## Camera calibration
+
+Ideally, you should know the position and tilts of your camera and it's focal length[^1]. While it is impossible to estimate all these parameters, it is possible to estimate the camera position and tilt from the data. Simply call
+
+```julia
+input_uv_file = "data/output_results_centre_line.csv"
+camera = camera_calibration(input_uv_file;
+    max_v = 720, max_u = 1280,
+    focal_length = 5.8e-3,
+    pixelspermeter = 1 / 5.5e-6
+)
+```
+which will return `camera`, which is calibrated to the data provided.
+
+[^1]: Technically the package needs the focal_length x pixels_per_meter. Many just call this the focal length.
+
 ## Execution speed
 
 Julia has a rather large overhead when first initializing. That means the line

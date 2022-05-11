@@ -42,9 +42,11 @@ function camera_calibration(uv_data::Vector{Vector{V}};
         trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
         cameraposition_reference = [0.0,0.604,-2.165],
         ψθφ_ref = [0.0,-19.1,-7.28] .* (pi/180.0),
+        focal_length = 5.8e-3,
+        pixelspermeter = 1 / 5.5e-6,
         camera_initial_guess = VideoCamera(cameraposition_reference;
-            focal_length = 5.8e-3,
-            pixelspermeter = 1 / 5.5e-6,
+            focal_length = focal_length,
+            pixelspermeter = pixelspermeter,
             ψθφ = ψθφ_ref
         )
     ) where V <: AbstractVector
