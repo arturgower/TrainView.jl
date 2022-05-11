@@ -50,7 +50,13 @@ camera = camera_calibration(input_uv_file;
     pixelspermeter = 1 / 5.5e-6
 )
 ```
-which will return `camera`, which is calibrated to the data provided.
+which will return `camera`, which is calibrated to the data provided. You could then call
+```julia
+julia> include("track_to_cabin_movement.jl")
+julia> track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv"; camera = camera, ,
+max_v = 720, max_u = 1280)
+```
+to use this calibrated 'camera', or any 'camera' or your choosing. NOTE: if you do not specify a camera, such as in the section above, then the code will attempt to calibrate a camera from the data provided.
 
 [^1]: Technically the package needs the focal_length x pixels_per_meter. Many just call this the focal length.
 
