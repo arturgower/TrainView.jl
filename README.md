@@ -42,12 +42,13 @@ The columns show how much the train car is displaced from being aligned with the
 
 Ideally, you should know the position and tilts of your camera and it's focal length[^1], or have a good guess. While it is impossible to estimate all these parameters, it is possible to estimate the camera position and tilt from the data. This is a nonlinear solver, so the initial guess is important.
 
-To help make a guess, let us look at the first frame of the data
+To help make a guess, we first need to understand our coordinate system. The origin of the coordinate system is on the floor, centred relative to the train, usually directly below the camera. The axis are such that $x$ is straight ahead of the train, $z$ is down, and $y$ is to the right (starboard).
 
+Next we can guess the $xyz$ position of the camera by looking at the first frame of the data
 ```julia
 uv_data = load_uv_data("data/output_results_centre_line.csv";
     sensor_width = 960, sensor_height = 540,
-)
+);
 
 # Choose only the first frame
 uv = uv_data[1]
@@ -62,23 +63,25 @@ plot(uv[1],uv[2], lab = "left track")
 plot!(uv[3],uv[4], lab = "right track")
 ```
 
-From this, and that our coordinate system has: $x$ straight ahead of the train, $z$ down, and therefore $y$ to the right (starboard), we can guess the camera $xyz$ position as
+From this, and the choice of our coordinate system we can guess:
 ```julia
-camera_xyz = [0.0,0.5,2.5]
+camera_xyz = [0.0,0.5,-2.5]
 ```
+We can also specify `ψθφ`, the camera's roll, pitch, and yaw. But this can be guessed automatically just by assuming that the camera is point at the tracks far ahead[^2].
+
+[^2]: It is best not to have the camera pointing straight ahead, as then the tracks in the middle of the camera image are infinitely far away.
 
 ```julia
-input_uv_file = "data/output_results_centre_line.csv"
-camera = camera_calibration(input_uv_file;
+camera = calibrated_camera(uv_data;
+    trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
+    camera_xyz = camera_xyz,
     sensor_width = 960, sensor_height = 540
-    focal_length = 5.8e-3,
-    pixelspermeter = 1 / 5.5e-6
 )
 ```
 which will return `camera`, which is calibrated to the data provided. You could then call
 ```julia
 julia> include("track_to_cabin_movement.jl")
-julia> track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv"; camera = camera, max_v = 720, max_u = 1280)
+julia> track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv"; camera = camera, sensor_width = 960, sensor_height = 540)
 ```
 to use this calibrated 'camera', or any 'camera' or your choosing. NOTE: if you do not specify a camera, such as in the section above, then the code will attempt to calibrate a camera from the data provided.
 

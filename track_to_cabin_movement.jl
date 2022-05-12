@@ -25,7 +25,7 @@ function track_to_cabin_movement(input_uv_file,output_file;
         if camera.xyz == [0.0,0.5,-2.2]
             println("You have not specified a camera setup, which you can do be passing the option 'camera = VideoCamera(position; ...)'. In this case the code will attempt to work out the camera setup from the data. Note the current values used for 'focal_length=$(camera.opticalproperties.focal_length)' and 'pixelspermeter=$(camera.opticalproperties.pixelspermeter)' which can not be inferred from the data.")
 
-            camera = camera_calibration(uv_data;
+            camera = calibrated_camera(uv_data;
                 trackprop = trackprop,
                 camera_initial_guess = camera
             )

@@ -7,7 +7,7 @@ export TracksAhead,TrackProperties, OpticalProperties, TrainCar, VideoCamera
 export focal_length, focalθφ, track_image_u, camera_image, left_track_image_u, right_track_image_u
 
 # Functions used figure out how the camera has moved relative to some reference
-export camera_calibration, camera_distoration, rail_uvs_to_distortion, Δu, left_track_Δu, right_track_Δu
+export calibrated_camera, camera_distoration, rail_uvs_to_distortion, Δu, left_track_Δu, right_track_Δu
 
 # methods that project small changes in track curvature to image of track
 export v_to_dudβ, v_to_dudα
