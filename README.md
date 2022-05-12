@@ -42,10 +42,10 @@ The columns show how much the train car is displaced from being aligned with the
 
 Ideally, you should know the position and tilts of your camera and it's focal length[^1], or have a good guess. While it is impossible to estimate all these parameters, it is possible to estimate the camera position and tilt from the data. This is a nonlinear solver, so the initial guess is important.
 
-To help make a guess, let us look at just the first frame of the data
+To help make a guess, let us look at the first frame of the data
 
 ```julia
-uv_data = load_uv_data(input_uv_file::String;
+uv_data = load_uv_data("data/output_results_centre_line.csv";
     sensor_width = 960, sensor_height = 540,
 )
 
@@ -62,11 +62,10 @@ plot(uv[1],uv[2], lab = "left track")
 plot!(uv[3],uv[4], lab = "right track")
 ```
 
-From this, we can guess the camera xyz position as
+From this, and that our coordinate system has: $x$ straight ahead of the train, $z$ down, and therefore $y$ to the right (starboard), we can guess the camera $xyz$ position as
 ```julia
-camera_xyz = [0.0,0.0,2.5]
+camera_xyz = [0.0,0.5,2.5]
 ```
-
 
 ```julia
 input_uv_file = "data/output_results_centre_line.csv"

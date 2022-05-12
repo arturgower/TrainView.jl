@@ -73,7 +73,7 @@ struct OpticalProperties{T<:AbstractFloat}
     pixelspermeter::T
 end
 
-function OpticalProperties(focal_length::T; sensor_width::Int = 960, sensor_height::Int = 540, pixelspermeter::T = 1 / 5.5e-6) where T
+function OpticalProperties(focal_length::T; sensor_width::Int = 4*960, sensor_height::Int = 4*540, pixelspermeter::T = 1 / 5.5e-6) where T
     return OpticalProperties{T}(focal_length,sensor_width,sensor_height,pixelspermeter)
 end
 
