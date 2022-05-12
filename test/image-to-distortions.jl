@@ -165,8 +165,8 @@
     error_mean = mean(abs.(d) for d in δs - estimate_δs);
 
     # To improve this, I need to add a reference that includes curvature. At the moment, the reference always
-    @test maximum(error_max ./ δ_mean) < 0.02
-    @test maximum(error_mean ./ δ_mean) < 0.005
+    @test maximum(error_max ./ δ_mean) < 0.025
+    @test maximum(error_mean ./ δ_mean) < 0.0055
 
 end
 
@@ -180,6 +180,8 @@ end
 
     ψθφ_ref = [0.4,-5.0,0.5] .* (pi/180.0);
     camera_reference = VideoCamera(cameraposition_reference;
+        sensor_width = 6500,
+        sensor_height = 5200,
         focal_length = f,
         pixelspermeter = pixelspermeter,
         ψθφ = ψθφ_ref

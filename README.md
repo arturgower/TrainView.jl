@@ -12,18 +12,18 @@ And given the positions of the track, **predict** how the train car has moved, a
 
 To process many frames, each with a large number of points on each track, such as `data/output_results_centre_line.csv`, go to the terminal, navigate to the same folder as this code, and execute
 ```
-> julia --project track_to_cabin_movement.jl data/output_results_centre_line.csv data/output.csv
+> julia --project track_to_cabin_movement.jl data/output_results_centre_line.csv data/output.csv data/camera_track.csv
 ```
-Or open the julia REPL
+where the third argument is optional. Or open the julia REPL
 ```
 > julia --project
 ```
  and then run the code
 ```julia
 julia> include("track_to_cabin_movement.jl")
-julia> track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv")
+julia> track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv"; setup_output_file = "data/camera_track.csv")
 ```
-where `output_results_centre_line.csv` is a data file with the track points on images, i.e. see the format of `data/output_results_centre_line.csv`, and `output.csv` is an output file name with the format:
+where `output_results_centre_line.csv` is a data file with the track points on images, i.e. see the format of `data/output_results_centre_line.csv`,`data/camera_track.csv` is where the code will save the camera and track properties used, and `output.csv` is an output file name with the format:
 
 |Y	|Z	|θT |φT |α  |	β  |
 |---|---|---|---|---|---|
@@ -40,12 +40,38 @@ The columns show how much the train car is displaced from being aligned with the
 
 ## Camera calibration
 
-Ideally, you should know the position and tilts of your camera and it's focal length[^1]. While it is impossible to estimate all these parameters, it is possible to estimate the camera position and tilt from the data. Simply call
+Ideally, you should know the position and tilts of your camera and it's focal length[^1], or have a good guess. While it is impossible to estimate all these parameters, it is possible to estimate the camera position and tilt from the data. This is a nonlinear solver, so the initial guess is important.
+
+To help make a guess, let us look at just the first frame of the data
+
+```julia
+uv_data = load_uv_data(input_uv_file::String;
+    sensor_width = 960, sensor_height = 540,
+)
+
+# Choose only the first frame
+uv = uv_data[1]
+
+using Plots
+gr(yflip = true)
+
+# Plot the left track
+plot(uv[1],uv[2], lab = "left track")
+
+# Plot the right track
+plot!(uv[3],uv[4], lab = "right track")
+```
+
+From this, we can guess the camera xyz position as
+```julia
+camera_xyz = [0.0,0.0,2.5]
+```
+
 
 ```julia
 input_uv_file = "data/output_results_centre_line.csv"
 camera = camera_calibration(input_uv_file;
-    max_v = 720, max_u = 1280,
+    sensor_width = 960, sensor_height = 540
     focal_length = 5.8e-3,
     pixelspermeter = 1 / 5.5e-6
 )

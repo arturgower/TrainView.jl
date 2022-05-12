@@ -2,31 +2,44 @@ using TrainView
 
 using CSV, DataFrames
 # using Statistics, LinearAlgebra
-
+#
 # input_uv_file = "data/output_results_centre_line.csv"
 
 function track_to_cabin_movement(input_uv_file,output_file;
-        cameraposition = [0.0, 0.6771, -2.1754],
-        cameraψθφ = [0.0, -0.2038, -0.08219],
+        setup_output_file::String = "empty000",
+        camera_xyz = [0.0, 0.5, -2.2],
         trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
-        camera = VideoCamera(cameraposition;
-            focal_length = 5.8e-3,
-            pixelspermeter = 1 / 5.5e-6,
-            ψθφ = cameraψθφ
+        sensor_width = 960,
+        sensor_height = 540,
+        camera = VideoCamera(camera_xyz;
+            sensor_width = sensor_width,
+            sensor_height = sensor_height
         ),
-        max_v::Int = 720, max_u::Int = 1280
     )
 
-    uv_data = load_uv_data(input_uv_file; max_v = 720, max_u = 1280)
+        uv_data = load_uv_data(input_uv_file;
+            sensor_width = camera.opticalproperties.sensor_width,
+            sensor_height = camera.opticalproperties.sensor_height
+        );
 
-    if camera.xyz == [0.0,0.604,-2.165]
-        println("You have not specified a camera setup, which you can do be passing the option 'camera = VideoCamera(position; ...)'. In this case the code will attempt to work out the camera setup from the data. Note the current values used for 'focal_length=$(camera.opticalproperties.focal_length)' and 'pixelspermeter=$(camera.opticalproperties.pixelspermeter)' which can not be inferred from the data.")
+        if camera.xyz == [0.0,0.5,-2.2]
+            println("You have not specified a camera setup, which you can do be passing the option 'camera = VideoCamera(position; ...)'. In this case the code will attempt to work out the camera setup from the data. Note the current values used for 'focal_length=$(camera.opticalproperties.focal_length)' and 'pixelspermeter=$(camera.opticalproperties.pixelspermeter)' which can not be inferred from the data.")
 
-        camera = camera_calibration(uv_data;
-            trackprop = trackprop,
-            camera_initial_guess = camera
-        )
-    end
+            camera = camera_calibration(uv_data;
+                trackprop = trackprop,
+                camera_initial_guess = camera
+            )
+        end
+
+        if setup_output_file != "empty000"
+            dcam = Dict(camera)
+            dtrack = Dict(trackprop)
+
+            CSV.write(setup_output_file,DataFrame(merge(dcam,dtrack)))
+
+            # df_cam = DataFrame(CSV.File("camera_test.csv"))
+            # VideoCamera(df_cam)
+        end
 
     # Calculate train car movement from frames
         choose_distortions = [:Y,:Z,:θT,:φT,:α,:β];
@@ -60,6 +73,10 @@ function track_to_cabin_movement(input_uv_file,output_file;
 end
 
 # Code below ensures that the above can be run from the terminal
-if length(ARGS) > 1 && typeof(ARGS[1]) == String && typeof(ARGS[2]) == String
+if 1 < length(ARGS) < 2 && typeof(ARGS[1]) == String && typeof(ARGS[2]) == String
     track_to_cabin_movement(ARGS[1],ARGS[2])
+end
+
+if length(ARGS) > 2 && typeof(ARGS[1]) == String && typeof(ARGS[2]) == String && typeof(ARGS[3]) == String
+    track_to_cabin_movement(ARGS[1],ARGS[2]; setup_output_file = ARGS[3])
 end

@@ -147,21 +147,21 @@ plot!(Ru2,Rv,linestyle=:dash, lab = "")
 
     maxframes = length(uv_data)
 
-    # anim = @animate for n in Int.(round.(LinRange(1,maxframes,600)))
-    #     uv = uv_data[n];
-    #
-    #     plot(uv[1],uv[2], lab = "", color = :red )
-    #     plot!(uv[3],uv[4], lab = "", color = :red )
-    #
-    #     plot!(Lu,Lv,linestyle=:dash, lab = "", color = :blue)
-    #     plot!(Ru,Rv,linestyle=:dash, lab = "", color = :blue)
-    #
-    #     plot!(camera, xlims = ulims, ylims = vlims, xguide = "", yguide = "",axis = false)
-    #
-    # end
-    #
-    # # gif(anim, "../../images/videos/only-curvature.gif", fps = 7)
-    # gif(anim, "../images/videos/compare-reference-to-track-center-line.gif", fps = 7)
+    anim = @animate for n in Int.(round.(LinRange(1,maxframes,600)))
+        uv = uv_data[n];
+
+        plot(uv[1],uv[2], lab = "", color = :red )
+        plot!(uv[3],uv[4], lab = "", color = :red )
+
+        plot!(Lu,Lv,linestyle=:dash, lab = "", color = :blue)
+        plot!(Ru,Rv,linestyle=:dash, lab = "", color = :blue)
+
+        plot!(camera, xlims = ulims, ylims = vlims, xguide = "", yguide = "",axis = false)
+
+    end
+
+    # gif(anim, "../../images/videos/only-curvature.gif", fps = 7)
+    gif(anim, "../images/videos/compare-reference-to-track-center-line.gif", fps = 7)
 
 
 # Calculate train car movement from frames

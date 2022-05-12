@@ -3,8 +3,8 @@ struct TrackProperties{T<:AbstractFloat}
     track_gauge::T
     "Distance between tracks measured between the inner faces of the rails"
     track_width::T
-    "A vector of the orientation, in radians, of the trackbed"
-    trackbed_orientation::Vector{T}
+    "The orientation, in radians, of the trackbed"
+    trackbed_orientation::T
     "Width of each sleeper or railroad tie"
     sleeper_width::T
     "Length of each sleeper or railroad tie"
@@ -13,7 +13,7 @@ struct TrackProperties{T<:AbstractFloat}
     sleeper_distance::T
 end
 
-function TrackProperties(; track_gauge::T = 1.435, track_width::T = 10e-3, trackbed_orientation::Vector{T} = [0.0], sleeper_width::T = 0.25, sleeper_length::T = 2.6, sleeper_distance::T = 0.70) where T
+function TrackProperties(; track_gauge::T = 1.435, track_width::T = 10e-3, trackbed_orientation::T = 0.0, sleeper_width::T = 0.25, sleeper_length::T = 2.6, sleeper_distance::T = 0.70) where T
     return TrackProperties{T}(track_gauge,track_width,trackbed_orientation,sleeper_width,sleeper_length,sleeper_distance)
 end
 
@@ -73,7 +73,7 @@ struct OpticalProperties{T<:AbstractFloat}
     pixelspermeter::T
 end
 
-function OpticalProperties(focal_length::T; sensor_width::Int = 6500, sensor_height::Int = 5200, pixelspermeter::T = 1 / 5.5e-6) where T
+function OpticalProperties(focal_length::T; sensor_width::Int = 960, sensor_height::Int = 540, pixelspermeter::T = 1 / 5.5e-6) where T
     return OpticalProperties{T}(focal_length,sensor_width,sensor_height,pixelspermeter)
 end
 
@@ -116,14 +116,13 @@ end
 
 VideoCamera(xyz::AbstractVector{T}, ψθφ::AbstractVector{T}, opticalproperties::OpticalProperties{T}) where T = VideoCamera{T}(SVector{3,T}(xyz), SVector{3,T}(ψθφ), opticalproperties)
 
-
-function VideoCamera(cameraposition::AbstractVector{T};
+function VideoCamera(camera_xyz::AbstractVector{T};
     focalpoint::AbstractVector{T} = [T(30),T(0),T(0)],
-    ψθφ::AbstractVector{T} = [T(0); focalθφ(focalpoint,cameraposition)],
+    ψθφ::AbstractVector{T} = [T(0); focalθφ(focalpoint,camera_xyz)],
     focal_length::T = 6e-3,
     kws...) where T
 
-    return VideoCamera(cameraposition, ψθφ, OpticalProperties(focal_length; kws...))
+    return VideoCamera(camera_xyz, ψθφ, OpticalProperties(focal_length; kws...))
 end
 
 """
@@ -148,17 +147,45 @@ function VideoCamera(camera::VideoCamera{T}, distortions::Dict) where T
     return VideoCamera(camera.xyz - δxyz, camera.ψθφ + δψθφ, opt)
 end
 
+import Base: Dict
+
+Dict(trackprop::TrackProperties) = Dict(f => getfield(trackprop,f) for f in fieldnames(typeof(trackprop)))
+
+function Dict(camera::VideoCamera)
+    fn_pos = filter(f -> f != :opticalproperties, fieldnames(VideoCamera))
+    fn_optical = fieldnames(OpticalProperties)
+
+    dict_pos = [f => getfield(camera,f) for f in fn_pos]
+    dict_optical = [f => getfield(camera.opticalproperties,f) for f in fn_optical]
+
+    return Dict([dict_pos;dict_optical])
+end
+
+VideoCamera(dict::Dict) = VideoCamera(dict[:xyz]; delete!(dict,:xyz)...)
+
+
+function VideoCamera(df::DataFrame)
+    fn_pos = filter(f -> f != :opticalproperties, fieldnames(VideoCamera))
+    fn_optical = fieldnames(OpticalProperties)
+
+    l1 = [f => df[!,f] for f in fn_pos]
+    l2 = [f => df[!,f][1] for f in fn_optical]
+    dict = Dict([l1;l2])
+
+    return VideoCamera(dict)
+end
+
 focal_length(camera::VideoCamera{T}) where T = camera.opticalproperties.focal_length
 
 """
-    focalθφ(focalpoint::Vector, cameraposition::Vector)
+    focalθφ(focalpoint::Vector, camera_xyz::Vector)
 
 Calculate the pitch and yaw of the camera (θ, φ) that would make the focalpoint in 3D be centered in the camera's focus / sensor.
 """
-function focalθφ(focalpoint::Vector{T}, cameraposition::Vector{T}) where T
+function focalθφ(focalpoint::AbstractVector{T}, camera_xyz::AbstractVector{T}) where T
 # focalpoint = [xyz[1] + xyz[3]*cot(θ)*cos(φ), xyz[2] + xyz[3]*cot(θ)*sin(φ), 0.0]
 
-    cx, cy, cz = cameraposition
+    cx, cy, cz = camera_xyz
 
     x = focalpoint[1] - cx
     y = focalpoint[2] - cy

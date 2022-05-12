@@ -1,5 +1,5 @@
 function load_uv_data(input_uv_file::String;
-        max_v::Int = 720, max_u::Int = 1280
+        sensor_width::Int = 960, sensor_height::Int = 540,
     )
 
     !isfile(input_uv_file) && @error "there is no file: $input_uv_file"
@@ -20,8 +20,8 @@ function load_uv_data(input_uv_file::String;
         Llen = data[1]
         Rlen = data[2]
 
-        us = data[3:2:end] .- (max_u / 2.0);
-        vs = data[4:2:end] .- (max_v / 2.0);
+        us = data[3:2:end] .- (sensor_width / 2.0);
+        vs = data[4:2:end] .- (sensor_height / 2.0);
 
         Lu = us[1:Llen];
         Lv = vs[1:Llen];

@@ -86,11 +86,11 @@
     uRs_arr = [duRdβs .* β + duRdαs .* α + uRs0 for α in αs];
 
     m, i = findmin([norm(us - uLs) for us in uLs_arr])
-    @test m / norm(uLs) < 1e-4
+    @test m / norm(uLs) < 2e-4
     @test norm(βs[i] - β) / abs(β) < 1e-5
 
     m, i = findmin([norm(us - uRs) for us in uRs_arr])
-    @test m / norm(uRs) < 1e-4
+    @test m / norm(uRs) < 3e-4
     @test norm(αs[i] - α) / abs(α) < 1e-5
 end
 

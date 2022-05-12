@@ -12,8 +12,8 @@ export camera_calibration, camera_distoration, rail_uvs_to_distortion, Δu, left
 # methods that project small changes in track curvature to image of track
 export v_to_dudβ, v_to_dudα
 
-# Useful support functions 
-export load_uv_data
+# Useful support functions
+export load_uv_data, track_to_cabin_movement, Dict
 
 import StaticArrays: SVector, SMatrix
 
@@ -21,11 +21,14 @@ using LinearAlgebra
 using Statistics
 using RecipesBase
 
+using DataFrames
+
 include("camera_types.jl")
 include("utils.jl")
 include("camera_distortion.jl")
 include("camera_calibration.jl")
 include("../plot/tracksahead.jl")
+include("../track_to_cabin_movement.jl")
 
 
 end
