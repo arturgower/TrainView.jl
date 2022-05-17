@@ -99,7 +99,7 @@ distortions = map(uv_data) do uv
         [u,v]
     end
 
-    distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
+    distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
         choose_distortions = choose_distortions,
         iterations = 4)
 
@@ -177,7 +177,7 @@ plot!(Ru2,Rv,linestyle=:dash, lab = "")
             [u,v]
         end
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera, trackprop;
+        distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera, trackprop;
             choose_distortions = choose_distortions,
             iterations = 1)
 

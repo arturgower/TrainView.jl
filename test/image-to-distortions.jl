@@ -61,7 +61,7 @@
         left_uvs = [ [uLs[j], vLs_ref[j]] for j in eachindex(uLs)];
         right_uvs = [ [uRs[j], vRs_ref[j]] for j in eachindex(uRs)];
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop; choose_distortions = choose_distortions)
+        distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop; choose_distortions = choose_distortions)
 
         [distortion[s] for s in choose_distortions]
     end;
@@ -91,7 +91,7 @@
         left_uvs = [ [uLs[j], vLs_ref[j]] for j in eachindex(uLs)];
         right_uvs = [ [uRs[j], vRs_ref[j]] for j in eachindex(uRs)];
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop; choose_distortions = choose_distortions)
+        distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop; choose_distortions = choose_distortions)
 
         [distortion[s] for s in choose_distortions]
     end;
@@ -116,7 +116,7 @@
         left_uvs = camera_image(camera, left_track);
         right_uvs = camera_image(camera, right_track);
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
+        distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
             choose_distortions = choose_distortions
             , iterations = 2
         );
@@ -153,7 +153,7 @@
         left_uvs = camera_image(camera, left_track);
         right_uvs = camera_image(camera, right_track);
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
+        distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
             choose_distortions = choose_distortions
             , iterations = 2
         );
@@ -234,7 +234,7 @@ end
         left_uvs = [ [uLs[j], vLs_ref[j]] for j in eachindex(uLs)];
         right_uvs = [ [uRs[j], vRs_ref[j]] for j in eachindex(uRs)];
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop; choose_distortions = choose_distortions)
+        distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop; choose_distortions = choose_distortions)
 
         [distortion[s] for s in choose_distortions]
     end;
@@ -264,7 +264,7 @@ end
         left_uvs = camera_image(camera, left_track, traincar);
         right_uvs = camera_image(camera, right_track, traincar);
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
+        distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
             choose_distortions = choose_distortions
             , iterations = 2
         );

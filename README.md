@@ -3,10 +3,10 @@
 A Julia package to model and interpret how a camera on a train sees the tracks ahead. The camera is assumed to be fixed on the train, but the train can move relative to the tracks in any direction.
 
 Currently the package can **model** how the tracks should appear in a camera image, as shown below.
-![A short video of the view of some tracks from a moving train](plot/simulate-trainview.gif)
+![A short video of the view of some tracks from a moving train](images/simulate-trainview.gif)
 
 And given the positions of the track, **predict** how the train car has moved, as shown below.
-![A short video of how data from tracks can be used to predict train car movement](plot/track-distortions-track-center-line.gif)
+![A short video of how data from tracks can be used to predict train car movement](images/track-distortions-track-center-line.gif)
 
 ## An example
 
@@ -20,8 +20,8 @@ where the third argument is optional. Or open the julia REPL
 ```
  and then run the code
 ```julia
-julia> include("track_to_cabin_movement.jl")
-julia> track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv"; setup_output_file = "data/camera_track.csv")
+include("track_to_cabin_movement.jl")
+track_to_cabin_movement("data/output_results_centre_line.csv","data/output.csv"; setup_output_file = "data/camera_track.csv")
 ```
 where `output_results_centre_line.csv` is a data file with the track points on images, i.e. see the format of `data/output_results_centre_line.csv`,`data/camera_track.csv` is where the code will save the camera and track properties used, and `output.csv` is an output file name with the format:
 
@@ -46,7 +46,7 @@ To help make a guess, we first need to understand our coordinate system. The ori
 
 Next we can guess the $xyz$ position of the camera by looking at the first frame of the data
 ```julia
-uv_data = load_uv_data("data/output_results_centre_line.csv";
+frames, uv_data = load_uv_data("data/output_results_centre_line.csv";
     sensor_width = 960, sensor_height = 540,
 );
 

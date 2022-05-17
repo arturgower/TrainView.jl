@@ -130,7 +130,7 @@ end
 
 Returns a `VideoCamera` with the same properties as camera, except with the added distortion.
 """
-function VideoCamera(camera::VideoCamera{T}, distortions::Dict) where T
+function VideoCamera(camera::VideoCamera{T}, distortions::Union{Dict,DataFrameRow}) where T
     δxyz = [get(distortions, s, zero(T)) for s in [:X,:Y,:Z]]
     δψθφ = [get(distortions, s, zero(T)) for s in [:ψ,:θ,:φ]]
     δf = get(distortions, :f, zero(T))
@@ -193,7 +193,7 @@ function focalθφ(focalpoint::AbstractVector{T}, camera_xyz::AbstractVector{T})
     φ = atan(y,x)
     θ = atan(cz * cos(φ) / x)
 
-    if θ < 0 || abs(φ) > pi
+    if θ > pi/2 || θ < -pi/2 || abs(φ) > pi
         @warn "unexpected angles θ = $θ or φ = $φ for a camera mounted on a train"
     end
 

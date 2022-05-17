@@ -69,7 +69,7 @@ right_uvs = [[Ru[i],Rv[i]] for i in eachindex(Ru)];
     uLs = left_track_image_u(camera_reference, trackprop, Lv);
     uRs = right_track_image_u(camera_reference, trackprop, Rv);
 
-    distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
+    distortion, fit = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
         choose_distortions = [:Y,:Z,:θ,:φ],
         # choose_distortions = [:Y,:Z,:f,:θ,:φ,:ψ,:α,:β],
         iterations = 6)
@@ -101,7 +101,7 @@ right_uvs = [[Ru[i],Rv[i]] for i in eachindex(Ru)];
         left_uvs =  [[Lu[i],Lv[i]] for i in eachindex(Lu)];
         right_uvs = [[Ru[i],Rv[i]] for i in eachindex(Ru)];
 
-        distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera, trackprop;
+        distortion, fit = rail_uvs_to_distortion(left_uvs, right_uvs, camera, trackprop;
             choose_distortions = choose_distortions,
             iterations = 1
         );

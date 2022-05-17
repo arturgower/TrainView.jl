@@ -95,7 +95,7 @@ max_curvature = 5e-4
         #
         # CSV.write("straight-track-points-on-image-$(findfirst(ns .== n)).csv", df)
 
-        image_distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
+        image_distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
             # choose_distortions = [:Y,:Z,:ψ,:θ,:α,:β],
             choose_distortions = [:Y,:Z,:ψ,:θ],
             iterations = 6

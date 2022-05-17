@@ -13,9 +13,13 @@ function load_uv_data(input_uv_file::String;
 
     header = lines[1];
     lines = lines[2:end];
+    frames = Array{Float64}(undef, length(lines))
 
-    uv_data = map(lines) do l
-        data = parse.(Int,split(l,',')[2:end-1])
+    uv_data = map(eachindex(lines)) do i
+        l = lines[i]
+        spl = split(l,',')
+        frames[i] = parse(Float64,spl[1])
+        data = parse.(Int,spl[2:end-1])
 
         Llen = data[1]
         Rlen = data[2]
@@ -32,5 +36,5 @@ function load_uv_data(input_uv_file::String;
         return [Lu,Lv,Ru,Rv]
     end;
 
-    return uv_data
+    return frames, uv_data
 end

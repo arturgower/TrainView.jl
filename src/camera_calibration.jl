@@ -25,7 +25,7 @@ function calibrated_camera(input_uv_file::String;
      sensor_width == 960 && sensor_height == 540 && @warn "It appears you have not specified the maximum (u,v) value for your images. Will use sensor_width = $sensor_width and sensor_height = $sensor_height."
 
     # NOTE: in the future I should load and save uv_data without centering it.
-    uv_data = load_uv_data(input_uv_file; sensor_width = sensor_width, sensor_height = sensor_height)
+    frames, uv_data = load_uv_data(input_uv_file; sensor_width = sensor_width, sensor_height = sensor_height)
 
     return calibrated_camera(uv_data; sensor_width = sensor_width, sensor_height = sensor_height, kws...)
 end
@@ -74,7 +74,7 @@ function calibrated_camera(uv_data::Vector{Vector{V}};
         end
 
         try
-            distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_initial_guess, trackprop;
+            distortion, fit = rail_uvs_to_distortion(left_uvs, right_uvs, camera_initial_guess, trackprop;
                 choose_distortions = choose_distortions,
                 iterations = 4
             )

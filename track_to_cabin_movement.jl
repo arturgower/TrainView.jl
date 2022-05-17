@@ -5,7 +5,10 @@ using CSV, DataFrames
 #
 # input_uv_file = "data/output_results_centre_line.csv"
 
+import TrainView: track_to_cabin_movement
+
 function track_to_cabin_movement(input_uv_file,output_file;
+        iterations::Int = 1,
         setup_output_file::String = "empty000",
         camera_xyz = [0.0, 0.5, -2.2],
         trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
@@ -17,13 +20,13 @@ function track_to_cabin_movement(input_uv_file,output_file;
         ),
     )
 
-        uv_data = load_uv_data(input_uv_file;
+        frames, uv_data = load_uv_data(input_uv_file;
             sensor_width = camera.opticalproperties.sensor_width,
             sensor_height = camera.opticalproperties.sensor_height
         );
 
         if camera.xyz == [0.0,0.5,-2.2]
-            println("You have not specified a camera setup, which you can do be passing the option 'camera = VideoCamera(position; ...)'. In this case the code will attempt to work out the camera setup from the data. Note the current values used for 'focal_length=$(camera.opticalproperties.focal_length)' and 'pixelspermeter=$(camera.opticalproperties.pixelspermeter)' which can not be inferred from the data.")
+            println("You have not specified a camera setup, which you can do by passing the option 'camera = VideoCamera(position; ...)'. In this case the code will attempt to work out the camera setup from the data. Note the current values used for 'focal_length=$(camera.opticalproperties.focal_length)' and 'pixelspermeter=$(camera.opticalproperties.pixelspermeter)' which can not be inferred from the data.")
 
             camera = calibrated_camera(uv_data;
                 trackprop = trackprop,
@@ -54,17 +57,20 @@ function track_to_cabin_movement(input_uv_file,output_file;
                 [u,v]
             end
 
-            distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera, trackprop;
+            distortion, fit = rail_uvs_to_distortion(left_uvs, right_uvs, camera, trackprop;
                 choose_distortions = choose_distortions,
-                iterations = 1)
+                iterations = iterations)
 
-            return [distortion[k] for k in choose_distortions]
+            return [[distortion[k] for k in choose_distortions]; fit]
         end;
 
     distortion_matrix = transpose(hcat(distortions...))
+    fits = distortion_matrix[:,end]
 
-    df = DataFrame(distortion_matrix,choose_distortions)
-    rename!(df,choose_distortions)
+    distortion_matrix = distortion_matrix[:,1:(end-1)]
+
+    df = DataFrame(hcat(fits,frames,distortion_matrix),[:fit;:frame;choose_distortions])
+    # rename!(df,choose_distortions)
 
     CSV.write(output_file,df)
 

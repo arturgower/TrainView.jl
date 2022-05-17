@@ -138,7 +138,7 @@ camera_reference = VideoCamera(cameraposition_reference;
     ψθφ = ψθφ_ref
 )
 
-distortion = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
+distortion, fits = rail_uvs_to_distortion(left_uvs, right_uvs, camera_reference, trackprop;
     # choose_distortions = [:Y,:f],
     choose_distortions = [:Y,:Z,:f,:θ,:φ],
     # choose_distortions = [:Y,:Z,:θ,:φ,:ψ,:α,:β],

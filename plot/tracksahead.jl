@@ -1,4 +1,4 @@
-@recipe function plot(tracks::TracksAhead, camera::VideoCamera; sleeper_displace = 0.0, camera_grid = true)
+@recipe function plot(tracks::TracksAhead, camera::VideoCamera; sleeper_displace = 0.0, camera_grid = true, sleepers = true)
 
     trackproperties = tracks.trackproperties
 
@@ -76,14 +76,18 @@
     end
 
     # plot the sleepers
+
     for uvs in sleepers_uv
-        @series begin
-            linecolor --> :black
-            fillcolor --> :brown
-            fillalpha --> 0.6
-            linewidth --> 0.1
-            label --> ""
-            Shape([uv[1] for uv in uvs], [uv[2] for uv in uvs])
+        if sleepers
+            @series begin
+                linecolor --> :black
+                fillcolor --> :brown
+                fillalpha --> 0.6
+                linewidth --> 0.1
+                label --> ""
+                seriestype := :shape
+                [uv[1] for uv in uvs], [uv[2] for uv in uvs]
+            end
         end
     end
 
@@ -94,7 +98,8 @@
         fillalpha --> 0.8
         linewidth --> 0.1
         label --> ""
-        Shape([uLs;reverse(uL2s)], [vLs;reverse(vL2s)])
+        seriestype := :shape
+        [uLs;reverse(uL2s)], [vLs;reverse(vL2s)]
     end
 
     # plot the right tracks
@@ -109,7 +114,8 @@
         fillcolor --> :red
         fillalpha --> 0.8
         linewidth --> 0.1
-        Shape([uRs;reverse(uR2s)], [vRs;reverse(vR2s)])
+        seriestype := :shape
+        [uRs;reverse(uR2s)], [vRs;reverse(vR2s)]
     end
 
 end

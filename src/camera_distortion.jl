@@ -36,6 +36,7 @@ function rail_uvs_to_distortion(left_track_uvs::AbstractVector{S}, right_track_u
 
     L = length(choose_distortions)
     δ = zeros(T,L)
+    fit = zero(T)
 
     for j = 1:iterations
         ΔuL = left_track_Δu(camera, trackproperties, vLs; choose_distortions = choose_distortions);
@@ -50,15 +51,14 @@ function rail_uvs_to_distortion(left_track_uvs::AbstractVector{S}, right_track_u
 
         A = transpose(ΔuL) * duLs + transpose(ΔuR) * duRs;
         δ = inv(M) * A
-        #
-        #
-        # inv(transpose(ΔuL) * ΔuL) * transpose(ΔuL) * duLs
-        #
-        # inv(transpose(ΔuL) * ΔuL) * transpose(ΔuL) * (ΔuL * δs[i])
-        #
-        # inv(transpose(ΔuL) * ΔuL + transpose(ΔuR) * ΔuR)
 
         camera = VideoCamera(camera, Dict(choose_distortions .=> δ))
+
+        uLs2 = left_track_image_u(camera, trackproperties, vLs);
+        uRs2 = right_track_image_u(camera, trackproperties, vRs);
+
+        fit = norm(uLs - uLs2) / (2norm(uLs)) + norm(uRs - uRs2) / (2norm(uRs))
+
     end
 
     dict = camera_distoration(camera_reference, camera)
@@ -69,7 +69,7 @@ function rail_uvs_to_distortion(left_track_uvs::AbstractVector{S}, right_track_u
         end
     end
 
-   return dict
+   return dict, fit
 end
 
 
