@@ -8,6 +8,10 @@ Currently the package can **model** how the tracks should appear in a camera ima
 And given the positions of the track, **predict** how the train car has moved, as shown below.
 ![A short video of how data from tracks can be used to predict train car movement](images/track-distortions-track-center-line.gif)
 
+
+Below shows how we can used the data from image recognition (red trackes) to predict what the camera would see if the train car was still relative to the tracks, and predict the track curvature and train car displacement. As we have the curvature, we can also calculate a map of the rail
+![A short video of how data from tracks can be used to predict train car movement and rail map](images/layout-map-1.gif)
+
 ## An example
 
 To process many frames, each with a large number of points on each track, such as `data/output_results_centre_line.csv`, go to the terminal, navigate to the same folder as this code, and execute
