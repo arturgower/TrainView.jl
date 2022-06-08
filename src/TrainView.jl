@@ -15,6 +15,9 @@ export v_to_dudβ, v_to_dudα
 # Useful support functions
 export load_uv_data, track_to_cabin_movement, Dict
 
+# signal processing
+export moving_average, rolling_average
+
 import StaticArrays: SVector, SMatrix
 
 using LinearAlgebra
@@ -27,6 +30,7 @@ include("camera_types.jl")
 include("utils.jl")
 include("camera_distortion.jl")
 include("camera_calibration.jl")
+include("signal_processing.jl")
 include("../plot/tracksahead.jl")
 include("../plot/track-distortions.jl")
 include("../track_to_cabin_movement.jl")

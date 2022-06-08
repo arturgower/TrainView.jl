@@ -19,10 +19,19 @@ function load_uv_data(input_uv_file::String;
         l = lines[i]
         spl = split(l,',')
         frames[i] = parse(Float64,spl[1])
-        data = parse.(Int,spl[2:end-1])
 
-        Llen = data[1]
-        Rlen = data[2]
+        # the end of the file might have a space or nothing. Just in case other non-numeric entries appear we use the below
+        i1 = findfirst(
+            s -> !isnothing(tryparse(Float64,s)),
+        reverse(spl))
+
+        data = parse.(Float64,spl[2:end - (i1 - 1)])
+
+        # the number of data points for the left rail
+        Llen = Int(data[1])
+
+        # the number of data points for the right rail
+        Rlen = Int(data[2])
 
         us = data[3:2:end] .- (sensor_width / 2.0);
         vs = data[4:2:end] .- (sensor_height / 2.0);

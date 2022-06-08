@@ -18,11 +18,11 @@
 Returns a calibrated camera using the data from the file input_uv_file. This data has a very special format that can be seen from the code in this function.
 """
 function calibrated_camera(input_uv_file::String;
-        sensor_width::Int = 960, sensor_height::Int = 540,
+        sensor_width::Int = 1000, sensor_height::Int = 600,
         kws...
     )
 
-     sensor_width == 960 && sensor_height == 540 && @warn "It appears you have not specified the maximum (u,v) value for your images. Will use sensor_width = $sensor_width and sensor_height = $sensor_height."
+    sensor_width == 1000 && sensor_height == 600 && @warn "It appears you have not specified the maximum (u,v) value for your images. Will use sensor_width = $sensor_width and sensor_height = $sensor_height."
 
     # NOTE: in the future I should load and save uv_data without centering it.
     frames, uv_data = load_uv_data(input_uv_file; sensor_width = sensor_width, sensor_height = sensor_height)

@@ -9,6 +9,7 @@ import TrainView: track_to_cabin_movement
 
 function track_to_cabin_movement(input_uv_file,output_file;
         iterations::Int = 1,
+        fps = 20.0,
         setup_output_file::String = "empty000",
         camera_xyz = [0.0, 0.5, -2.2],
         trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
@@ -30,7 +31,9 @@ function track_to_cabin_movement(input_uv_file,output_file;
 
             camera = calibrated_camera(uv_data;
                 trackprop = trackprop,
-                camera_initial_guess = camera
+                camera_initial_guess = camera,
+                sensor_width = camera.opticalproperties.sensor_width,
+                sensor_height = camera.opticalproperties.sensor_height
             )
         end
 
@@ -69,10 +72,15 @@ function track_to_cabin_movement(input_uv_file,output_file;
 
     distortion_matrix = distortion_matrix[:,1:(end-1)]
 
-    df = DataFrame(hcat(fits,frames,distortion_matrix),[:fit;:frame;choose_distortions])
+    dt = 1.0 / fps;
+    ts = 0.0:dt:( (length(frames) -1)*dt)
+
+    df = DataFrame(hcat(frames,ts,fits,distortion_matrix),[:frame;:time;:fit;choose_distortions])
     # rename!(df,choose_distortions)
 
-    CSV.write(output_file,df)
+    dfm = rolling_average(df, Int(round(fps*2.4)))
+
+    CSV.write(output_file,dfm)
 
     println("Data saved as a CSV file in $(output_file)")
 
