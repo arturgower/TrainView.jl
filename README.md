@@ -1,5 +1,7 @@
 # TrainView.jl
 
+[![Build Status](https://github.com/arturgower/TrainView.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/arturgower/TrainView.jl/actions/workflows/CI.yml?query=branch%3Amain)
+
 A Julia package to model and interpret how a camera on a train sees the tracks ahead. The camera is assumed to be fixed on the train, but the train can move relative to the tracks in any direction.
 
 Currently the package can **model** how the tracks should appear in a camera image, red tracks shown below. And given the positions of the track, **predict** how the train car has moved.
