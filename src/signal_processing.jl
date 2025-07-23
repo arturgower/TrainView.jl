@@ -14,13 +14,13 @@ end
 
 
 function rolling_average(vs::AbstractVector, n::Int = Int(round(length(vs)/200)) + 1;
-        fits = zeros(length(vs)), σ_ratio = 1.0
+        fits = zeros(length(vs)), σ_ratio = 1.0, fit_threshold = 0.5
     )
     [
     mean(
         begin
             vpart = vs[i:(i+n-1)]
-            inds = findall(fits[i:(i+n-1)] .< 0.5)
+            inds = findall(fits[i:(i+n-1)] .< fit_threshold)
             if isempty(inds) @error "too many points that do not fit the calibration" end
             vpart = vpart[inds]
 

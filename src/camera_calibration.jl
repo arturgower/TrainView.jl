@@ -42,7 +42,8 @@ Returns a calibrated camera where each 'uv_data[i]' contains the uv points from 
 function calibrated_camera(uv_data::Vector{Vector{V}};
         trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
         camera_xyz::Vector = [0.0,0.0,-2.2],
-        camera_initial_guess = nothing,
+        camera_initial_guess = nothing, 
+        theshold_ratio = 0.4,
         kws...
     ) where V <: AbstractVector
 
@@ -93,7 +94,7 @@ function calibrated_camera(uv_data::Vector{Vector{V}};
     mean_distortion = mean(distortions);
     std_distortion = std(distortions);
 
-    std_theshold = std_distortion * 0.4
+    std_theshold = std_distortion * theshold_ratio
     calibrate_inds = [isempty(findall(abs.(mean_distortion - d) .> std_theshold)) for d in distortions];
     count(calibrate_inds)
 

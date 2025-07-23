@@ -15,6 +15,9 @@ function track_to_cabin_movement(input_uv_file,output_file;
         trackprop = TrackProperties(track_gauge = 1.435 + 0.065),
         sensor_width = 960,
         sensor_height = 540,
+        σ_ratio = 1.0,
+        fit_threshold = 0.5,
+        use_rolling_average = false,
         camera = VideoCamera(camera_xyz;
             sensor_width = sensor_width,
             sensor_height = sensor_height
@@ -78,9 +81,11 @@ function track_to_cabin_movement(input_uv_file,output_file;
     df = DataFrame(hcat(frames,ts,fits,distortion_matrix),[:frame;:time;:fit;choose_distortions])
     # rename!(df,choose_distortions)
 
-    dfm = rolling_average(df, Int(round(fps*2.4)))
+    if use_rolling_average
+        dfm = rolling_average(df, Int(round(fps*2.4)); σ_ratio = σ_ratio, fit_threshold = fit_threshold)
+    end
 
-    CSV.write(output_file,dfm)
+    CSV.write(output_file,df)
 
     println("Data saved as a CSV file in $(output_file)")
 
